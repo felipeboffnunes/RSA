@@ -5,6 +5,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 
+ALLOWED_LENGHT = 1
 
 app = dash.Dash(__name__)
 
@@ -75,8 +76,11 @@ app.layout = html.Div(
     [State('private-bits-input', 'value')],
 )
 def get_private_key(n_clicks, value):
+    global ALLOWED_LENGHT
     private_key = rsa.find_prime(int(value))
+    ALLOWED_LENGHT = len(str(private_key))
     return f'{private_key}'
+
 
 
 @app.callback(
@@ -163,6 +167,9 @@ def decrypt(n_clicks, value1, value2, value3):
     [State('input-area', 'value')],
 )
 def get_ascii(n_clicks, value):
+    global ALLOWED_LENGHT
+    if len(value) > ALLOWED_LENGHT:
+        return 'Message is too big for key size'
     ascii_message = rsa.str_to_ascii(value) 
     return f'{ascii_message}'
 
